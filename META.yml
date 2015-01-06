@@ -15,7 +15,7 @@ name: File-Parser-Role
 provides:
   File::Parser::Role:
     file: lib/File/Parser/Role.pm
-    version: v0.2.3
+    version: v0.2.4
 recommends:
   IO::All: '0'
   Mojo::Path: '0'
@@ -34,4 +34,4 @@ requires:
   Test::Warnings: '0.010'
 resources:
   license: http://dev.perl.org/licenses/
-version: v0.2.3
+version: v0.2.4

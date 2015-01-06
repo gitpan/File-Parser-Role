@@ -9,7 +9,7 @@ use Carp;
 use IO::File;
 use IO::String;
 
-use version; our $VERSION = qv('0.2.3');
+use version; our $VERSION = qv('0.2.4');
 use Moo::Role;
 use MooX::Aliases;
 
@@ -117,7 +117,7 @@ from some source
 
 =head1 VERSION
 
-This document describes File::Parser::Role version 0.2.3 This is a
+This document describes File::Parser::Role version 0.2.4 This is a
 Moo::Role for reading (and then parsing) single data files. It makes
 the constructor support 3 kinds of file sources:
 
@@ -131,12 +131,12 @@ the constructor support 3 kinds of file sources:
 
 =back
 
-It also provides a method "fh" that gives an at least readable file
-handle to the contents of the file.
+It also provides an attribute C<fh> that is a handle to the contents
+of the file argument.
 
 =head1 SYNOPSIS
 
-    package MyClassThatDoesStuffToAFile;
+    package MyClassThatDoesStuffWithAFile;
 
     sub parse {
         my $self = shift;
@@ -146,14 +146,14 @@ handle to the contents of the file.
 
     with "File::Parser::Role";
 
-    ## ... and in some nearby code:
+And then in some nearby code:
 
-    my $obj = MyClassThatDoesStuffToAFile->new("some_file.txt");
+    my $obj = MyClassThatDoesStuffWithAFile->new("some_file.txt");
     # or #
-    my $obj = MyClassThatDoesStuffToAFile->new(file => "some_file.txt");
-    ## optinally:
+    my $obj = MyClassThatDoesStuffWithAFile->new(file => "some_file.txt");
 
-    my $obj = MyClassThatDoesStuffToAFile->new( file => "some_file.txt", encoding => "utf8" );
+    ## and with encoding:
+    my $obj = MyClassThatDoesStuffWithAFile->new( file => "some_file.txt", encoding => "utf8" );
     ## encoding can be anything that binmode's encoding() can understand.
 
     print $obj->filename; # "some_file.txt"
@@ -162,16 +162,16 @@ handle to the contents of the file.
     ## - OR -
 
     my $fh = IO::File->new( "< some_file.txt" );
-    ## you are now responsible for encoding on this handle!
+    ## you are responsible for encoding on this handle!
 
-    my $obj = MyClassThatDoesStuffToAFile->new( file => $fh );
+    my $obj = MyClassThatDoesStuffWithAFile->new( file => $fh );
 
     ## no filename nor file size available
 
     ## - OR -
 
-    my $file_content = read_file( "some_file.txt" );
-    my $obj = MyClassThatDoesStuffToAFile->new( file => \$file_content );
+    my $file_content = slurp_file( "some_file.txt" );
+    my $obj = MyClassThatDoesStuffWithAFile->new( file => \$file_content );
 
     ## you are also responsible for encoding on this data
     ## no file name nor file size available
@@ -192,7 +192,7 @@ The constructor is meant to be all expected kinds of flexible:
 
 =over
 
-=item * new("file")
+=item * new("file") # a local filename
 
 =item * new($fh)
 
@@ -202,16 +202,18 @@ The constructor is meant to be all expected kinds of flexible:
 
 =back
 
-Construction tests the argument and if it's a path to a file reachable
-on the local file system records its C<filename> and C<size> in those
-two attributes.
+The constructor tests the argument to see if it's a path to a local
+file. If so, it records its C<filename> and C<size> in those two
+attributes.
 
-When it checks if the argument if a local filename, it checks "$file",
-allowing objects that stringify to paths to work correctly. This
-applies among others to Path::Tiny.
+It stringifies the file argument for this check, allowing file objects
+that stringify to paths to work correctly. This applies among others
+to Path::Tiny.
 
-If a reference to something is passed (or an object), it is assumed to
-be something that can be read with <> and passed for a handle.
+If a reference or an object is passed as the argument, (that does not
+stringity fo a readable local file), it is assumed to be something
+that can be read with the <> operator and passed unchanged to the
+C<fh> attribute of the class.
 
 =head2 fh
 
@@ -245,29 +247,25 @@ reference to content
 
 =item * L<Moo::Role>
 
+=item * L<MooX::Aliases>
+
 =item * L<IO::String>
 
-=item * L<Pod::Coverage::Moose>
-
 =item * L<Test::Most>
-
-=item * L<Test::Perl::Critic>
-
-=item * L<Test::Pod>
-
-=item * L<Test::Pod::Coverage>
 
 =item * L<Test::Output>
 
 =item * L<Test::Warnings>
-
-=item * L<MooX::Aliases>
 
 =back
 
 =head1 INCOMPATIBILITIES
 
 None reported.
+
+=head1 REPOSITORY
+
+L<https://github.com/torbjorn/File-Parser-Role>
 
 =head1 BUGS AND LIMITATIONS
 
